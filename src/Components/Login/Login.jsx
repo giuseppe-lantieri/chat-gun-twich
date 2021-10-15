@@ -8,7 +8,7 @@ export default function Login({ client_id }) {
 					<div style={{ margin: "auto", marginTop: "50%", backgroundColor: "#8FA6C4", borderRadius: "20px", padding: "30px" }}>
 						<a href={"https://id.twitch.tv/oauth2/authorize?client_id=" +
 							client_id +
-							"&redirect_uri=https://00d1-109-70-207-133.ngrok.io/redirect/&response_type=token&scope=user:read:subscriptions user:read:email"}
+							"&redirect_uri=" + process.env.REACT_APP_LINK + "redirect/&response_type=token&scope=user:read:subscriptions user:read:email"}
 						>
 							Login With Twitch
 						</a>
