@@ -5,7 +5,7 @@ import UserContext from '../../Context/UserProvider';
 import DiplayerMessage from './DiplayerMessage';
 import { Link } from 'react-router-dom';
 
-const gun = Gun(['http://localhost:8765/gun', 'https://gun-server-js.herokuapp.com/', 'https://gun-server-europe.herokuapp.com/']);
+const gun = Gun(['http://localhost:8765/gun', 'https://gun-server-js.herokuapp.com/', 'https://gun-server-europe.herokuapp.com/', 'https://gun-manhattan.herokuapp.com/gun']);
 
 export default function Chat({ client_id }) {
 	const [message, setMessage] = useState('')
@@ -27,20 +27,7 @@ export default function Chat({ client_id }) {
 				aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
 				setArray(aux);
 			})
-
 		})();
-		const intervall = setInterval(async () => {
-			let decryptContext = await SEA.decrypt(context, client_id);
-			gun.get('GanzioBello').get('chat').get('messages').get(decryptContext.idChat).map().on(async m => {
-				let decypted = await SEA.decrypt(m, decryptContext.idChat);
-				let aux = array;
-				aux.push(decypted);
-				aux.sort((a, b) => a.createdAt - b.createdAt);
-				aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
-				setArray(aux);
-			})
-		}, 1000);
-		return () => clearInterval(intervall);
 	}, [])
 
 	async function saveMessage() {
