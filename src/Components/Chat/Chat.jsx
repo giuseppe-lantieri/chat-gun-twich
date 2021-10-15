@@ -5,7 +5,7 @@ import UserContext from '../../Context/UserProvider';
 import DiplayerMessage from './DiplayerMessage';
 import { Link } from 'react-router-dom';
 
-const gun = Gun(['http://localhost:8765/gun', 'https://gun-manhattan.herokuapp.com/gun']);
+const gun = Gun(['http://localhost:8765/gun', 'https://gun-server-js.herokuapp.com/', 'https://gun-server-europe.herokuapp.com/']);
 
 export default function Chat({ client_id }) {
 	const [message, setMessage] = useState('')
