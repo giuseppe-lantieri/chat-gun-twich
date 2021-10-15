@@ -5,7 +5,6 @@ import UserContext from '../../Context/UserProvider';
 import DiplayerMessage from './DiplayerMessage';
 import { Link } from 'react-router-dom';
 
-// initialize gun locally
 const gun = Gun();
 
 export default function Chat({ client_id }) {
@@ -39,7 +38,7 @@ export default function Chat({ client_id }) {
 			message: message,
 			createdAt: Date.now()
 		}, DecryptedContext.idChat);
-		messages.set(meggageEncrypt)
+		messages.put(meggageEncrypt)
 		setMessage("")
 	}
 
