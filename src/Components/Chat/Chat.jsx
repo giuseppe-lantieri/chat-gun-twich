@@ -5,7 +5,9 @@ import UserContext from '../../Context/UserProvider';
 import DiplayerMessage from './DiplayerMessage';
 import { Link } from 'react-router-dom';
 
-const gun = Gun();
+const gun = Gun({
+	peers: ["localhost"]
+});
 
 export default function Chat({ client_id }) {
 	const [message, setMessage] = useState('')
@@ -27,7 +29,20 @@ export default function Chat({ client_id }) {
 				aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
 				setArray(aux);
 			})
+
 		})();
+		const intervall = setInterval(async () => {
+			let decryptContext = await SEA.decrypt(context, client_id);
+			gun.get('GanzioBello').get('chat').get('messages').get(decryptContext.idChat).map().on(async m => {
+				let decypted = await SEA.decrypt(m, decryptContext.idChat);
+				let aux = array;
+				aux.push(decypted);
+				aux.sort((a, b) => a.createdAt - b.createdAt);
+				aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
+				setArray(aux);
+			})
+		}, 1000);
+		return () => clearInterval(intervall);
 	}, [])
 
 	async function saveMessage() {
@@ -38,7 +53,7 @@ export default function Chat({ client_id }) {
 			message: message,
 			createdAt: Date.now()
 		}, DecryptedContext.idChat);
-		messages.put(meggageEncrypt)
+		messages.set(meggageEncrypt)
 		setMessage("")
 	}
 
