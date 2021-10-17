@@ -7,7 +7,7 @@ const Nonym = process.env.REACT_APP_NONYM;
 const Ruby_Rust = process.env.REACT_APP_RUBY;
 const GeneralChat = process.env.REACT_APP_GENERAL;
 
-export default function Utils({ client_id, setUs }) {
+export default function Utils({ client_id, setUs, secret }) {
 	const [User, setUser] = useState({ id: "", image: "", name: "", token: "" })
 	const [Username, setUsername] = useState("");
 	const [SubscribedNonym, setSubscribedNonym] = useState(false);
@@ -49,7 +49,7 @@ export default function Utils({ client_id, setUs }) {
 	async function setContext(idChat) {
 		let toEncrypt = { id: User.id, img: User.image, idChat: idChat, name: User.name, chatAllowed: ChatAllowed, token: User.token };
 		console.log(toEncrypt)
-		let context = await SEA.encrypt(toEncrypt, client_id);
+		let context = await SEA.encrypt(toEncrypt, secret);
 		setUs(context);
 		localStorage.setItem("lastContext", JSON.stringify(context));
 		history.push("/chat");

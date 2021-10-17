@@ -5,8 +5,6 @@ import SEA from 'gun/sea';
 import UserContext from '../../Context/UserProvider';
 import DiplayerMessage from './DiplayerMessage';
 
-const unset = require('gun/lib/unset.js')
-// ['http://localhost:8765/gun', 'https://gun-server-js.herokuapp.com/', 'https://gun-server-europe.herokuapp.com/', 'https://gun-manhattan.herokuapp.com/gun']
 const gun = Gun(['https://gun-server-js.herokuapp.com/gun', 'https://gun-server-europe.herokuapp.com/gun']);
 
 const Nonym = process.env.REACT_APP_NONYM;
@@ -14,7 +12,7 @@ const Ruby_Rust = process.env.REACT_APP_RUBY;
 const GeneralChat = process.env.REACT_APP_GENERAL;
 const Ganzio = process.env.REACT_APP_GANZIO;
 
-export default function Chat({ client_id, setUs }) {
+export default function Chat({ secret, setUs }) {
 	const [message, setMessage] = useState('')
 	const [array, setArray] = useState([])
 	const [DecryptedContext, setDecryptedContext] = useState();
@@ -24,14 +22,14 @@ export default function Chat({ client_id, setUs }) {
 
 	useEffect(() => {
 		(async () => {
-			let decryptContext = await SEA.decrypt(context, client_id);
+			let decryptContext = await SEA.decrypt(context, secret);
 			if (!decryptContext) { setError("C'è stato un errore"); return; };
 			setDecryptedContext(decryptContext);
-			gun.get('GanzioBello').get('chat').get('messages').get(decryptContext.idChat).map().on(async (m, i) => {
+			gun.get('GanzioBello').get('chat').get('messages').get(decryptContext.idChat).map().on(async (m, idMessage) => {
 				if (m != null) {
-					let decrypted = await SEA.decrypt(m, client_id + decryptContext.idChat);
+					let decrypted = await SEA.decrypt(m, secret + decryptContext.idChat);
 					if (decrypted != undefined) {
-						if (decryptContext.id == decryptContext.idChat || decryptContext.id == Ganzio) decrypted["id_message"] = i;
+						if (decryptContext.id == decryptContext.idChat || decryptContext.id == Ganzio) decrypted["id_message"] = idMessage;
 
 						let aux = array;
 						aux.push(decrypted);
@@ -52,7 +50,7 @@ export default function Chat({ client_id, setUs }) {
 			name: DecryptedContext.name,
 			message: message,
 			createdAt: Date.now()
-		}, client_id + DecryptedContext.idChat);
+		}, secret + DecryptedContext.idChat);
 		messages.set(messageEncrypted)
 		setMessage("")
 	}
@@ -63,6 +61,17 @@ export default function Chat({ client_id, setUs }) {
 		setArray((prex) => (prex.filter(ele => ele != message)));
 	}
 
+	function clearChats() {
+		[GeneralChat, Nonym, Ruby_Rust].forEach((idChat) => {
+			gun.get('GanzioBello').get('chat').get('messages').get(idChat).map().on(async (m, idMessage) => {
+				if (m != null) {
+					console.log(idMessage);
+					gun.get('GanzioBello').get('chat').get('messages').get(idChat).get(idMessage).put(null);
+				}
+			})
+		});
+	}
+
 	function onChange(e) {
 		setMessage(e.target.value)
 	}
@@ -70,7 +79,7 @@ export default function Chat({ client_id, setUs }) {
 	async function setContext(idChat) {
 		let toEncrypt = { id: DecryptedContext.id, img: DecryptedContext.img, idChat: idChat, name: DecryptedContext.name, chatAllowed: DecryptedContext.chatAllowed, token: DecryptedContext.token };
 		console.log(toEncrypt)
-		let context = await SEA.encrypt(toEncrypt, client_id);
+		let context = await SEA.encrypt(toEncrypt, secret);
 		setUs(context);
 		localStorage.setItem("lastContext", JSON.stringify(context));
 		history.go("/chat");
@@ -105,6 +114,11 @@ export default function Chat({ client_id, setUs }) {
 						}
 					</div>
 				</div>
+				{DecryptedContext && DecryptedContext.id == Ganzio &&
+					<div>
+						<button onClick={clearChats}>Clear All Chat</button>
+					</div>
+				}
 				<div style={{ display: "flex", flexDirection: "column-reverse", overflow: "scroll", height: "80vh" }}>
 					<DiplayerMessage list={array} deleteMessage={deleteMessage}></DiplayerMessage>
 				</div>
@@ -122,15 +136,17 @@ export default function Chat({ client_id, setUs }) {
 				</div>
 			</div>
 			}
-			{Error != "" && <div>
-				<div>
-					{Error}
+			{
+				Error != "" && <div>
+					<div>
+						{Error}
+					</div>
+					<button style={{ width: "300px", margin: "4px" }} onClick={() => {
+						localStorage.removeItem("lastContext");
+						history.push("/");
+					}}>Logout</button>
 				</div>
-				<button style={{ width: "300px", margin: "4px" }} onClick={() => {
-					localStorage.removeItem("lastContext");
-					history.push("/");
-				}}>Logout</button>
-			</div>}
-		</div>
+			}
+		</div >
 	);
 }

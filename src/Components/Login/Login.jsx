@@ -9,14 +9,13 @@ const Ruby_Rust = process.env.REACT_APP_RUBY;
 const GeneralChat = process.env.REACT_APP_GENERAL;
 
 
-export default function Login({ client_id, setUs }) {
+export default function Login({ client_id, setUs, secret }) {
 	const context = useContext(UserContext);
-	console.log(context instanceof Object);
 	const history = useHistory();
 
 
 	async function refreshSub() {
-		let decryptContext = await SEA.decrypt(context, client_id);
+		let decryptContext = await SEA.decrypt(context, secret);
 		const allowedChat = [GeneralChat];
 		let response;
 		const specsFetch = { method: 'get', headers: new Headers({ 'Authorization': 'Bearer ' + decryptContext.token, 'Client-id': client_id }) };
@@ -30,8 +29,7 @@ export default function Login({ client_id, setUs }) {
 			allowedChat.push(Ruby_Rust);
 		}
 		let toEncrypt = { id: decryptContext.id, img: decryptContext.img, idChat: decryptContext.idChat, name: decryptContext.name, chatAllowed: allowedChat, token: decryptContext.token };
-		console.log(toEncrypt)
-		let newContext = await SEA.encrypt(toEncrypt, client_id);
+		let newContext = await SEA.encrypt(toEncrypt, secret);
 		setUs(newContext);
 		localStorage.setItem("lastContext", JSON.stringify(newContext));
 		history.push("/chat");

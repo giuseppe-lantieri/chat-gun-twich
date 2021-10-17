@@ -13,6 +13,7 @@ import "./App.css";
 
 export default function App() {
 	const client_id = process.env.REACT_APP_CLIENT_ID;
+	const secret = process.env.REACT_APP_SECRET;
 	const [User, setUser] = useState({});
 
 	return (
@@ -21,13 +22,13 @@ export default function App() {
 				<Router>
 					<Switch>
 						<Route path="/chat">
-							<Chat client_id={client_id} setUs={setUser} />
+							<Chat secret={secret} setUs={setUser} />
 						</Route>
 						<Route path="/redirect">
-							<Utils client_id={client_id} setUs={setUser} ></Utils>
+							<Utils client_id={client_id} setUs={setUser} secret={secret} ></Utils>
 						</Route>
 						<Route path="/">
-							<Login client_id={client_id} setUs={setUser} />
+							<Login client_id={client_id} setUs={setUser} secret={secret} />
 						</Route>
 					</Switch>
 				</Router>
