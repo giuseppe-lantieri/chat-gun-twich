@@ -30,14 +30,15 @@ export default function Chat({ client_id, setUs }) {
 			gun.get('GanzioBello').get('chat').get('messages').get(decryptContext.idChat).map().on(async (m, i) => {
 				if (m != null) {
 					let decrypted = await SEA.decrypt(m, client_id + decryptContext.idChat);
+					if (decrypted != undefined) {
+						if (decryptContext.id == decryptContext.idChat || decryptContext.id == Ganzio) decrypted["id_message"] = i;
 
-					if (decryptContext.id == decryptContext.idChat || decryptContext.id == Ganzio) decrypted["id_message"] = i;
-
-					let aux = array;
-					aux.push(decrypted);
-					aux.sort((a, b) => a.createdAt - b.createdAt);
-					aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
-					setArray(aux);
+						let aux = array;
+						aux.push(decrypted);
+						aux.sort((a, b) => a.createdAt - b.createdAt);
+						aux = [... new Set(aux.map(ele => (JSON.stringify(ele))))].map(ele => (JSON.parse(ele)));
+						setArray(aux);
+					}
 				}
 			})
 		})();
