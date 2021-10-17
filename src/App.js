@@ -21,13 +21,13 @@ export default function App() {
 				<Router>
 					<Switch>
 						<Route path="/chat">
-							<Chat client_id={client_id} />
+							<Chat client_id={client_id} setUs={setUser} />
 						</Route>
 						<Route path="/redirect">
-							<Utils client_id={client_id} setter={setUser}></Utils>
+							<Utils client_id={client_id} setUs={setUser} ></Utils>
 						</Route>
 						<Route path="/">
-							<Login client_id={client_id} />
+							<Login client_id={client_id} setUs={setUser} />
 						</Route>
 					</Switch>
 				</Router>

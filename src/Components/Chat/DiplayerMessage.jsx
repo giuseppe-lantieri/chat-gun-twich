@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import Message from './Message';
 
-export default function DiplayerMessage({ list }) {
+export default function DiplayerMessage({ list, deleteMessage }) {
 
 	return (
 		<div>
@@ -10,7 +10,7 @@ export default function DiplayerMessage({ list }) {
 					{
 						list.map((m, index) => (
 							<div key={index}>
-								<Message img={m.image} nome={m.name} messaggio={m.message} data={m.createdAt} />
+								<Message message={m} deleteMessage={deleteMessage} />
 							</div>
 						))
 					}
