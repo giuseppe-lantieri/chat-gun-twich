@@ -44,15 +44,17 @@ export default function Chat({ secret, setUs }) {
 
 	async function saveMessage(e) {
 		e.preventDefault();
-		const messages = gun.get('GanzioBello').get('chat').get('messages').get(DecryptedContext.idChat);
-		const messageEncrypted = await SEA.encrypt({
-			image: DecryptedContext.img,
-			name: DecryptedContext.name,
-			message: message,
-			createdAt: Date.now()
-		}, secret + DecryptedContext.idChat);
-		messages.set(messageEncrypted)
-		setMessage("")
+		if (message !== "") {
+			const messages = gun.get('GanzioBello').get('chat').get('messages').get(DecryptedContext.idChat);
+			const messageEncrypted = await SEA.encrypt({
+				image: DecryptedContext.img,
+				name: DecryptedContext.name,
+				message: message,
+				createdAt: Date.now()
+			}, secret + DecryptedContext.idChat);
+			messages.set(messageEncrypted)
+			setMessage("")
+		}
 	}
 
 	async function deleteMessage(message) {

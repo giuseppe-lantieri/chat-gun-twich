@@ -16,7 +16,7 @@ export default function Message({ message, deleteMessage }) {
 							<span>{message.message}</span>
 						</div>
 					</div>
-					<p style={{ fontSize: "0.6em", marginTop: "4px", padding: "5px" }}>{new Date(message.createdAt).toISOString()}</p>
+					<p style={{ fontSize: "0.6em", marginTop: "4px", padding: "5px" }}>{new Date(message.createdAt).toISOString().replace("T", " ").split(".")[0]}</p>
 					{message.id_message && <button onClick={() => { deleteMessage(message) }}>X</button>}
 				</div>
 			}
